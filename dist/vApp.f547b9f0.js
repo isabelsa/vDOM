@@ -125,9 +125,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var createElement = function createElement(tagName, _ref) {
-  var attrs = _ref.attrs,
-      children = _ref.children;
+var createElement = function createElement(tagName) {
+  var _ref = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {},
+      _ref$attrs = _ref.attrs,
+      attrs = _ref$attrs === void 0 ? {} : _ref$attrs,
+      _ref$children = _ref.children,
+      children = _ref$children === void 0 ? [] : _ref$children;
+
   return {
     tagName: tagName,
     attrs: attrs,
@@ -145,12 +149,82 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 
-var render = function render(vNode) {
-  var DOM_el = document.createElement(vNode.tagName);
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest(); }
+
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance"); }
+
+function _iterableToArrayLimit(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+
+var renderEl = function renderEl(_ref) {
+  var tagName = _ref.tagName,
+      attrs = _ref.attrs,
+      children = _ref.children;
+  var DOM_el = document.createElement(tagName); // sets Attrs
+
+  for (var _i = 0, _Object$entries = Object.entries(attrs); _i < _Object$entries.length; _i++) {
+    var _Object$entries$_i = _slicedToArray(_Object$entries[_i], 2),
+        k = _Object$entries$_i[0],
+        v = _Object$entries$_i[1];
+
+    DOM_el.setAttribute(k, v);
+  } // sets Children
+
+
+  var _iteratorNormalCompletion = true;
+  var _didIteratorError = false;
+  var _iteratorError = undefined;
+
+  try {
+    for (var _iterator = children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+      var child = _step.value;
+      // for every Child you re-render them and append them
+      var DOM_child = render(child);
+      DOM_el.appendChild(DOM_child);
+    }
+  } catch (err) {
+    _didIteratorError = true;
+    _iteratorError = err;
+  } finally {
+    try {
+      if (!_iteratorNormalCompletion && _iterator.return != null) {
+        _iterator.return();
+      }
+    } finally {
+      if (_didIteratorError) {
+        throw _iteratorError;
+      }
+    }
+  }
+
   return DOM_el;
 };
 
+var render = function render(vNode) {
+  if (typeof vNode === "string") {
+    return document.createTextNode(vNode);
+  }
+
+  return renderEl(vNode);
+};
+
 var _default = render;
+exports.default = _default;
+},{}],"vDOM/mount.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var mount = function mount(node, target) {
+  target.replaceWith(node);
+  return node;
+};
+
+var _default = mount;
 exports.default = _default;
 },{}],"vDOM/vApp.js":[function(require,module,exports) {
 "use strict";
@@ -159,17 +233,30 @@ var _createElement = _interopRequireDefault(require("./createElement"));
 
 var _render = _interopRequireDefault(require("./render"));
 
+var _mount = _interopRequireDefault(require("./mount"));
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var vApp = (0, _createElement.default)("div", {
-  attrs: {
-    id: "app"
-  },
-  children: []
-});
+var createVApp = function createVApp(count) {
+  return (0, _createElement.default)("div", {
+    attrs: {
+      id: "app",
+      dataCount: count
+    },
+    children: [String(count), (0, _createElement.default)("img", {
+      attrs: {
+        src: "https://media.giphy.com/media/10aCvxXbhM6WFW/giphy.gif"
+      }
+    })]
+  });
+};
+
+var count = 0;
+var vApp = createVApp(count);
 var DOM_app = (0, _render.default)(vApp);
+(0, _mount.default)(DOM_app, document.getElementById("app"));
 console.log(DOM_app);
-},{"./createElement":"vDOM/createElement.js","./render":"vDOM/render.js"}],"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./createElement":"vDOM/createElement.js","./render":"vDOM/render.js","./mount":"vDOM/mount.js"}],"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
